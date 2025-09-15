@@ -1,0 +1,39 @@
+name: Scrape and Commit Data
+
+on:
+  workflow_dispatch:    # allow manual runs
+  schedule:
+    - cron: "0 8 * * 1" # every Monday at 08:00 UTC
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # needed so commits can be pushed back
+
+      - name: Run scrape script
+        run: |
+          bash ./scrape-data-gh.sh nclaeys/fluent-bit-go-azure
+          bash ./scrape-data-gh.sh datamindedbe/eu-data-platform
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "niels.claeys@gmail.com"
+
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add -A
+            git commit -m "chore: update scraped data"
+          else
+            echo "No changes to commit."
+          fi
+
+      - name: Push changes
+        if: success()
+        run: git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
