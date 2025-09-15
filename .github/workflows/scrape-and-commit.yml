@@ -19,6 +19,8 @@ jobs:
         run: |
           bash ./scrape-data-gh.sh nclaeys/fluent-bit-go-azure
           bash ./scrape-data-gh.sh datamindedbe/eu-data-platform
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Commit changes
         run: |
