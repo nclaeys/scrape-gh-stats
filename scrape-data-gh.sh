@@ -5,6 +5,7 @@ set -euo pipefail
 # Example: ./gh-traffic.sh openai/gpt-5 --csv
 
 REPO="${1:?Repository (owner/repo) required}"
+OUTPUT_LOCATION="${2:-$(pwd)}"
 EXPORT_CSV=true
 
 if [[ "${2:-}" == "--no-csv" ]]; then
@@ -14,7 +15,7 @@ fi
 # Extract repo name (after slash) for output folder
 REPO_NAME="$(basename "$REPO")"
 if $EXPORT_CSV; then
-  OUTDIR="${REPO_NAME}_stats"
+  OUTDIR="${OUTPUT_LOCATION}/${REPO_NAME}_stats"
   mkdir -p "$OUTDIR"
   echo "📂 CSV output will be written to $OUTDIR/"
 fi
