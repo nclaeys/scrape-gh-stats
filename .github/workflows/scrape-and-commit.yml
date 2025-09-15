@@ -35,5 +35,3 @@ jobs:
       - name: Push changes
         if: success()
         run: git push
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
