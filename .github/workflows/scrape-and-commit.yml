@@ -17,12 +17,16 @@ jobs:
         with:
           fetch-depth: 0   # needed so commits can be pushed back
 
+      - name: Install GitHub CLI and jq
+        run: sudo apt-get install -y gh jq
+
+      - name: Authenticate using PAT
+        run: echo "${{ secrets.PAT_TOKEN }}" | gh auth login --with-token
+
       - name: Run scrape script
         run: |
-          bash ./scrape-data-gh.sh nclaeys/fluent-bit-go-azure
+          bash ./scrape-data-gh.sh datamindedbe/demo-upcloud-data-platform
           bash ./scrape-data-gh.sh datamindedbe/eu-data-platform
-        env:
-          GH_TOKEN: ${{ github.token }}
 
       - name: Commit changes
         run: |
@@ -32,10 +36,7 @@ jobs:
           if [[ -n "$(git status --porcelain)" ]]; then
             git add -A
             git commit -m "chore: update scraped data"
+            git push
           else
             echo "No changes to commit."
           fi
-
-      - name: Push changes
-        if: success()
-        run: git push
